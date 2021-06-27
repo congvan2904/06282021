@@ -1,0 +1,24 @@
+body{
+	background-color: lightblue;
+}
+#login{
+	background-color: lightskyblue;
+}
+#chat{
+	background-color: yellow;
+	width: 150px;
+	height: 300px;
+}
+#addName{
+	float: left;
+}
+#btnLogOut{
+	float: left;
+	margin-top: 10px;
+}
+#imgLoadText{
+	width: 25x;
+	height: 20px;
+	float: left;
+	margin-top: 40px;
+}

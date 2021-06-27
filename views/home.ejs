@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Home</title>
+	<link rel="stylesheet" type="text/css" href="/css/home.css">
+	<script type="text/javascript" src="/jquery.min.js"></script>
+	<script type="text/javascript" src="https://socket06282021.herokuapp.com/socket.io/socket.io.js"></script>
+	<script type="text/javascript">
+		const socket=io('https://socket06282021.herokuapp.com')
+		socket.on('server-send-existname-to-client',function(){
+			alert('Login name is exist')
+		})
+		socket.on('server-send-alluser-to-client',function(data){
+				if(data.name==$('#ipName').val()){
+					$('#login').hide()
+					$('#chat').show()
+				}
+				// console.log(data)
+				$('#listName').html('')
+				data.lUser.forEach(function(i){
+					$('#listName').append('<div class="addName" socketid="'+i.id+'">'+i.data+'</div>')
+			})
+		})
+		socket.on('server-send-buzz-to-client',function(data){
+			alert('Co thang '+data.name+' choc may kia')
+			// $('audio')[0].play()
+			$('audio').get(0).play()
+		})
+		socket.on('server-send-logout-to-client',function(data){
+			alert('Thang '+data.name+' da out')
+			loadListUser(data.newList)
+		})
+		socket.on('server-send-userFocusinInputChat-to-client',function(){
+			$('#imgLoadText').show()
+		})
+		socket.on('server-send-userFocusoutInputChat-to-client',function(){
+			$('#imgLoadText').hide()
+		})
+
+		function login(){
+			const user=$('#ipName').val()
+			socket.emit('client-send-user-to-server',user)
+		}
+		function buzz(){
+			var name=$(this).html()
+
+			if($('#ipName').val()!=name){
+				var getidBuzz=$(this).attr('socketid')
+				socket.emit('client-send-buzz-to-server',getidBuzz)
+			}
+		}
+		function logout(){
+			$('#login').show()
+			$('#chat').hide()
+			socket.emit('client-send-logout-to-server')
+		}
+		function loadListUser(data){
+			$('#listName').html('')
+			data.forEach(function(i){
+				$('#listName').append('<div class="addName" socketid="'+i.id+'">'+i.data+'</div>')
+			})
+		}
+		function focusInIpChat(){
+			console.log('dang focus')
+				socket.emit('client-send-focusinInputChat-to-server')	
+			
+		}
+		function focusOutIpChat(){
+			// $('#imgLoadText').hide()
+			socket.emit('client-send-focusoutInputChat-to-server')
+		}
+
+		$(document).ready(function(){
+			$('#login').show()
+			$('#chat').hide()
+			$('#imgLoadText').hide()
+			$('#btnLogin').click(login)
+			$(document).on('click','.addName',buzz)
+			$('#btnLogOut').click(logout)
+			$('#ipChat').focusin(focusInIpChat)
+			$('#ipChat').focusout(focusOutIpChat)
+			
+		})
+
+	</script>
+</head>
+<body>
+	<div id="login">
+		<input id="ipName" type="text" name="">
+		<input id="btnLogin" type="button" name="" value="Login">
+	</div>
+	<div id="chat">
+		<div id="listName"></div>
+		<input id="btnLogOut" type="button" name="" value="Logout">
+		<img id="imgLoadText" src="/images/imgLoadText.gif">
+		<input type="text" id="ipChat" placeholder="Enter text">
+	</div>
+	<audio>
+		<source src="https://www.w3schools.com/html/horse.ogg" type="audio/ogg">
+	</audio>
+
+</body>
+</html>
